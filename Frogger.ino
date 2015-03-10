@@ -1,15 +1,15 @@
 /*
  * Christina Lipson
- * Project 2 Part 2
- * Feb. 24, 2015
+ * March. 9, 2015
  *
- * An 8x8 Frogger game. Get the frog past the cars and trucks and into the 3 bins on each of the 3 levels.
+ * An 8x8 Frogger game. 
+ * Get the frog past the cars and trucks and into the 3 bins on each of the 3 levels.
  *
  */
 
 #include <FrequencyTimer2.h>
 
-// Levels 1, 2 and 3
+// Levels 1, 2 and 3. Left column is the starting point for the frog.
 #define field1 { \
     {0, 0, 0, 0, 0, 1, 1, 0}, \
     {0, 0, 1, 0, 0, 0, 1, 0}, \
@@ -134,10 +134,6 @@ void setup() {
 
   clearLeds();
 
-  // Turn off toggling of pin 11
-  FrequencyTimer2::disable();
-  // Set refresh rate (interrupt timeout period)
-  //FrequencyTimer2::setPeriod(1000);
   // Set interrupt routine to be called
   FrequencyTimer2::setOnOverflow(display);
   
@@ -160,11 +156,9 @@ void loop() {
     int reading1 = digitalRead(up);
     int reading2 = digitalRead(left);
 
-    // check to see if you just pressed a button 
-    // (i.e. the input went from LOW to HIGH),  and you've waited 
-    // long enough since the last press to ignore any noise:  
+    // check to see if you just pressed a button LOW to HIGH that is not noise
 
-    // If the switch changed, due to noise or pressing:
+    // If the switch changed:
     if (reading1 != lastButtonState1) {
       // reset the debouncing timer
       lastDebounceTime1 = millis();
