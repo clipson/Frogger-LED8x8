@@ -67,6 +67,39 @@
     {0, 0, 0, 0, 0, 1, 1, 0} \
 }
 
+#define one { \
+    {0, 0, 0, 0, 0, 0, 0, 0}, \
+    {0, 0, 0, 0, 0, 0, 0, 0}, \
+    {0, 1, 0, 0, 0, 1, 0, 0}, \
+    {0, 1, 1, 1, 1, 1, 1, 0}, \
+    {0, 1, 1, 1, 1, 1, 1, 0}, \
+    {0, 1, 0, 0, 0, 0, 0, 0}, \
+    {0, 0, 0, 0, 0, 0, 0, 0}, \
+    {0, 0, 0, 0, 0, 0, 0, 0} \
+}
+
+#define two { \
+    {0, 0, 0, 0, 0, 0, 0, 0}, \
+    {0, 1, 0, 0, 1, 1, 0, 0}, \
+    {0, 1, 1, 0, 0, 1, 1, 0}, \
+    {0, 1, 1, 1, 0, 0, 1, 0}, \
+    {0, 1, 0, 1, 1, 1, 1, 0}, \
+    {0, 1, 0, 0, 1, 1, 0, 0}, \
+    {0, 0, 0, 0, 0, 0, 0, 0}, \
+    {0, 0, 0, 0, 0, 0, 0, 0} \
+}
+
+#define three { \
+    {0, 0, 0, 0, 0, 0, 0, 0}, \
+    {0, 0, 1, 0, 0, 1, 0, 0}, \
+    {0, 1, 0, 0, 0, 0, 1, 0}, \
+    {0, 1, 0, 0, 1, 0, 1, 0}, \
+    {0, 1, 0, 1, 1, 1, 1, 0}, \
+    {0, 0, 1, 1, 0, 1, 0, 0}, \
+    {0, 0, 0, 0, 0, 0, 0, 0}, \
+    {0, 0, 0, 0, 0, 0, 0, 0} \
+}
+
 byte leds[8][8]; // Background matrix
 byte frog[8][8]; // Frog matrix
 
@@ -114,8 +147,13 @@ const int left = 13;
 byte background1[8][8] = field1 ;
 byte background2[8][8] = field2 ;
 byte background3[8][8] = field3 ;
+
+// Assign indication matrices
 byte loss[8][8] = X ;
 byte winner[8][8] = check ;
+byte first[8][8] = one ;
+byte second[8][8] = two ;
+byte third[8][8] = three ;
 
 void setup() {
   // sets the pins as output
@@ -136,19 +174,12 @@ void setup() {
 
   // Set interrupt routine to be called
   FrequencyTimer2::setOnOverflow(display);
-  
-  // Initialize background and frog
-  setPattern();
-  resetFrog();
-  resetBins();
-  display();
-  delay(100);
 }
 
 // Main loop
 void loop() {
   
-  setup();
+  start();
   play = 0;
   while (play == 0) {
     
@@ -237,11 +268,40 @@ void loop() {
   }
 }
 
+void start() {
+  // Level number
+  levelNum();
+  display();
+  delay(1500);
+  
+  // Initialize background and frog
+  setPattern();
+  resetFrog();
+  resetBins();
+  display();
+}
+
 void clearLeds() {
   // Clear display array
   for (int i = 0; i < 8; i++) {
     for (int j = 0; j < 8; j++) {
       leds[i][j] = 0;
+    }
+  }
+}
+
+void levelNum() {
+  for (int i = 0; i < 8; i++) {
+    for (int j = 0; j < 8; j++) {
+      if (level == 1) {
+        leds[i][j] = first[i][j];
+      }
+      if (level == 2) {
+        leds[i][j] = second[i][j];
+      }
+      if (level == 3) {
+        leds[i][j] = third[i][j];
+      }
     }
   }
 }
@@ -368,7 +428,7 @@ void lose() {
     }
   }
   display();
-  delay(3000);
+  delay(2000);
 }
 
 // fill bin that the frog reached and reset frog position
@@ -414,7 +474,7 @@ void win() {
     }
   }
   display();
-  delay(4000);
+  delay(2000);
   
   // increment level (if level 3, go back to level 1)
   if (level == 3) level = 1;
